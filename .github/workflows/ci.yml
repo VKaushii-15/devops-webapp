@@ -1,0 +1,28 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm install
+      - run: npm run build
+      - run: npm test --if-present
+      - name: Slack Success Notification
+        if: success()
+        run: |
+          curl -X POST -H "Content-type: application/json" \
+          --data '{"text":"✅ CI Build Succeeded"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Slack Failure Notification
+        if: failure()
+        run: |
+          curl -X POST -H "Content-type: application/json" \
+          --data '{"text":"❌ CI Build Failed"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
