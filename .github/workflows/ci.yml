@@ -7,6 +7,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Slack Force Test
+        continue-on-error: true
+        run: |
+          curl -v -X POST -H "Content-type: application/json" \
+          --data '{"text":"🧪 Slack force test from GitHub Actions"}' \
+          "${{ secrets.SLACK_WEBHOOK_URL }}"
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
